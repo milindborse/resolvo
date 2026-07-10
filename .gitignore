@@ -1,0 +1,304 @@
+# Compiled class files
+*.class
+*.log
+
+# Package files
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle/
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# IDE Files
+.idea/
+*.iml
+*.ipr
+*.iws
+*.swp
+*.swo
+*~
+.idea_modules/
+.classpath
+.project
+.settings/
+bin/
+.vscode/
+*.code-workspace
+.metadata/
+
+# Spring Boot
+application-local.properties
+application-dev.properties
+application-test.properties
+application-*.properties
+!application-example.properties
+!application-template.properties
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# OS Files
+Thumbs.db
+.DS_Store
+Desktop.ini
+ehthumbs.db
+*.bak
+
+# Logs
+logs/
+*.log
+*.log.gz
+
+# Database
+*.db
+*.sqlite
+*.h2.db
+*.lock.db
+*.trace.db
+
+# Docker
+docker-compose.override.yml
+*.pid
+*.pid.lock
+
+# Node.js (if using frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Python (if any)
+*.pyc
+__pycache__/
+
+# Backup files
+*.backup
+*.orig
+*.old
+*.save
+
+# Test reports
+test-output/
+target/surefire-reports/
+target/failsafe-reports/
+test-results/
+
+# Performance, heap dumps, and memory files
+*.hprof
+*.heap
+*.dump
+
+# Secrets and keys
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.key
+*.pem
+*.crt
+*.csr
+secrets/
+keys/
+
+# Sensitive configuration
+config/application-secret.properties
+config/application-production.properties
+config/*-secret.properties
+*.secret.properties
+
+# Local application configuration
+application-oauth.properties
+application-security.properties
+application-db.properties
+
+# AWS/Cloud credentials
+.aws/
+credentials
+config
+
+# Kubernetes
+*.kubeconfig
+kubeconfig
+.kube/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+*.auto.tfvars
+
+# Migration files (if using Flyway/Liquibase)
+!db/migration/*.sql
+!db/changelog/*.xml
+
+# Intellij
+*.iml
+.idea/
+out/
+*.iws
+*.ipr
+.idea_modules/
+.idea/caches/
+.idea/libraries/
+.idea/shelf/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dataSources/
+.idea/dataSources.ids
+.idea/dataSources.local.xml
+.idea/sqlDataSources.xml
+.idea/dynamic.xml
+.idea/uiDesigner.xml
+.idea/gradle.xml
+.idea/misc.xml
+.idea/compiler.xml
+.idea/encodings.xml
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/vcs.xml
+.idea/azure/
+.idea/azureSettings.xml
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
+.metadata/
+.apt_generated/
+.apt_generated_tests/
+.factorypath
+*.tmp
+*.cache
+*.diff
+*.patch
+*.orig
+*.rej
+.lein-deps-sum
+.lein-repl-history
+*.clj
+*.cljc
+
+# NetBeans
+nbproject/
+nb-build.xml
+nb-dist/
+nb-private/
+nb-configuration.xml
+
+# VS Code
+.vscode/
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json
+*.code-workspace
+
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+*.dll
+*.exe
+*.obj
+*.pdb
+*.ilk
+*.exp
+*.lib
+
+# Linux
+*.so
+*.o
+*.a
+*.la
+*.lo
+*.lai
+
+# Application specific (Resolvo)
+resolvo-db/
+temp/
+uploads/
+downloads/
+*.sql
+data/
+logs/
+backup/
+*.pid
+*.port
+
+# Generated code
+generated/
+src/main/generated/
+src/generated/
+*.gen.java
+
+# API documentation
+docs/api/
+docs/swagger/
+docs/asciidoc/
+docs/html/
+
+# Coverage reports
+coverage/
+.coveralls.yml
+jacoco.exec
+sonar-project.properties
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+.mvn/timing.properties
+
+# Spring Boot DevTools
+.springBeans
+.springBeans.factory
+
+# Actuator
+actuator/
+
+# Test specific
+test-output/
+test-reports/
+*.test
+*.spec
+
+# Custom Resolvo specific files
+*.db3
+*.sqlite3
+resolvo.iml
+*.lock
+docker/data/
+docker/logs/
