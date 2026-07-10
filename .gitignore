@@ -302,3 +302,6 @@ resolvo.iml
 *.lock
 docker/data/
 docker/logs/target/
+target/
+*.jar
+*.war
