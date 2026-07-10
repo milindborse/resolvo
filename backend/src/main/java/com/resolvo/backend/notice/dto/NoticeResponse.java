@@ -14,5 +14,9 @@ public class NoticeResponse {
     private String title;
     private String body;
     private boolean important;
+    private boolean pinned;
+    private boolean published;
+    private Instant publishedAt;
     private Instant createdAt;
+    private Instant updatedAt;
 }

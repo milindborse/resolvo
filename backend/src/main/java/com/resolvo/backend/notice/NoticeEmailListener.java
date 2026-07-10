@@ -11,8 +11,10 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 /**
- * Only important notices trigger emails (per spec) - regular notices are
- * visible on the board but don't spam residents' inboxes.
+ * Reacts to NoticePublishedEvent - fired only when an IMPORTANT notice is
+ * published. NoticeService has no reference to EmailService at all; this
+ * listener is the sole place email is triggered from, mirroring
+ * ComplaintEmailListener's role in the complaint module.
  */
 @Component
 @RequiredArgsConstructor
@@ -23,13 +25,9 @@ public class NoticeEmailListener {
     private final EmailService emailService;
 
     @EventListener
-    public void onNoticeCreated(NoticeCreatedEvent event) {
+    public void onNoticePublished(NoticePublishedEvent event) {
         Notice notice = noticeRepository.findById(event.getNoticeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Notice not found"));
-
-        if (!notice.isImportant()) {
-            return;
-        }
 
         for (User resident : userRepository.findAll()) {
             if (resident.getRole() == UserRole.RESIDENT) {

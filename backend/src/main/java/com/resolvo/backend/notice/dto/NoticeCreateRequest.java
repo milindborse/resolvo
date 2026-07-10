@@ -18,4 +18,7 @@ public class NoticeCreateRequest {
     private String body;
 
     private boolean important;
+
+    /** Optional: admins may pin a notice right at creation instead of a separate call. */
+    private boolean pinned;
 }
