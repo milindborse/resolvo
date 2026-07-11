@@ -58,11 +58,13 @@ public class ComplaintService {
         return mapper.toResponse(saved);
     }
 
+    @Transactional(readOnly = true)
     public PageResponse<ComplaintResponse> getMyComplaints(Long residentId, Pageable pageable) {
         Page<Complaint> page = complaintRepository.findByResidentId(residentId, pageable);
         return new PageResponse<>(page.map(mapper::toResponse));
     }
 
+    @Transactional(readOnly = true)
     public PageResponse<ComplaintResponse> getAllComplaints(ComplaintStatus status, ComplaintPriority priority,
                                                              ComplaintCategory category, LocalDate fromDate,
                                                              LocalDate toDate, Pageable pageable) {
@@ -71,12 +73,14 @@ public class ComplaintService {
         return new PageResponse<>(page.map(mapper::toResponse));
     }
 
+    @Transactional(readOnly = true)
     public ComplaintResponse getComplaintById(Long complaintId, User requester) {
         Complaint complaint = findOrThrow(complaintId);
         assertViewable(complaint, requester);
         return mapper.toResponse(complaint);
     }
 
+    @Transactional(readOnly = true)
     public List<ComplaintHistoryResponse> getComplaintHistory(Long complaintId, User requester) {
         Complaint complaint = findOrThrow(complaintId);
         assertViewable(complaint, requester);

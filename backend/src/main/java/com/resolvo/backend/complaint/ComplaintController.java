@@ -13,6 +13,7 @@ import com.resolvo.backend.complaint.dto.ComplaintStatusUpdateRequest;
 import com.resolvo.backend.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -47,7 +48,7 @@ public class ComplaintController {
     @PostMapping(consumes = {"multipart/form-data"})
     @PreAuthorize("hasRole('RESIDENT')")
     public ResponseEntity<ApiResponse<ComplaintResponse>> createComplaint(
-            @Valid @ModelAttribute ComplaintCreateRequest request,
+            @Valid @ParameterObject @ModelAttribute ComplaintCreateRequest request,
             @RequestPart(required = false) MultipartFile image,
             @AuthenticationPrincipal UserPrincipal principal) {
 
