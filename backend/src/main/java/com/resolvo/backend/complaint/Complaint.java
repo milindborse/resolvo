@@ -35,7 +35,8 @@ import lombok.Setter;
         @Index(name = "idx_complaint_status", columnList = "status"),
         @Index(name = "idx_complaint_priority", columnList = "priority"),
         @Index(name = "idx_complaint_category", columnList = "category"),
-        @Index(name = "idx_complaint_created_at", columnList = "createdAt")
+        @Index(name = "idx_complaint_created_at", columnList = "createdAt"),
+        @Index(name = "idx_complaint_overdue", columnList = "overdue")
 })
 public class Complaint extends BaseEntity {
 
@@ -72,4 +73,14 @@ public class Complaint extends BaseEntity {
     @Builder.Default
     @Column(nullable = false)
     private boolean closed = false;
+
+    /**
+     * Persisted, not computed-on-read. Set exclusively by OverdueDetectionService
+     * on its scheduled scan, and cleared by ComplaintService when a complaint
+     * resolves. columnDefinition gives existing rows a DB-level default on
+     * migration, so ddl-auto=update won't fail or leave nulls on old data.
+     */
+    @Builder.Default
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean overdue = false;
 }

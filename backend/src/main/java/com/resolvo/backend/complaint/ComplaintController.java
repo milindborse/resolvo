@@ -10,11 +10,14 @@ import com.resolvo.backend.complaint.dto.ComplaintHistoryResponse;
 import com.resolvo.backend.complaint.dto.ComplaintPriorityUpdateRequest;
 import com.resolvo.backend.complaint.dto.ComplaintResponse;
 import com.resolvo.backend.complaint.dto.ComplaintStatusUpdateRequest;
+import com.resolvo.backend.complaint.dto.ComplaintSummaryResponse;
 import com.resolvo.backend.security.UserPrincipal;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springdoc.core.annotations.ParameterObject;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -40,13 +43,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/complaints")
 @RequiredArgsConstructor
-@Tag(name = "Complaints", description = "Complaint lifecycle, history, and filtering")
+@Tag(name = "Complaints", description = "Complaint lifecycle, history, and advanced search/filtering")
 public class ComplaintController {
 
     private final ComplaintService complaintService;
 
     @PostMapping(consumes = {"multipart/form-data"})
     @PreAuthorize("hasRole('RESIDENT')")
+    @Operation(summary = "Raise a complaint", description = "Multipart form: title, description, category (required) and an optional image, uploaded to Cloudinary.")
     public ResponseEntity<ApiResponse<ComplaintResponse>> createComplaint(
             @Valid @ParameterObject @ModelAttribute ComplaintCreateRequest request,
             @RequestPart(required = false) MultipartFile image,
@@ -59,30 +63,45 @@ public class ComplaintController {
 
     @GetMapping("/my")
     @PreAuthorize("hasRole('RESIDENT')")
-    public ResponseEntity<ApiResponse<PageResponse<ComplaintResponse>>> getMyComplaints(
+    @Operation(summary = "My complaints", description = "Residents only ever see their own complaints. Returns the lightweight summary DTO (no description/imageUrl) - use GET /{id} for full detail.")
+    public ResponseEntity<ApiResponse<PageResponse<ComplaintSummaryResponse>>> getMyComplaints(
             @AuthenticationPrincipal UserPrincipal principal,
-            @PageableDefault(size = 10) Pageable pageable) {
+            @ParameterObject @PageableDefault(size = 10) Pageable pageable) {
 
-        PageResponse<ComplaintResponse> response = complaintService.getMyComplaints(principal.getId(), pageable);
+        PageResponse<ComplaintSummaryResponse> response = complaintService.getMyComplaints(principal.getId(), pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<PageResponse<ComplaintResponse>>> getAllComplaints(
-            @RequestParam(required = false) ComplaintStatus status,
-            @RequestParam(required = false) ComplaintPriority priority,
-            @RequestParam(required = false) ComplaintCategory category,
+    @Operation(summary = "Advanced complaint search (admin)",
+            description = "Every filter below is optional and composable. All filtering happens in the database via "
+                    + "a Specification (Criteria API) - nothing is filtered in Java after the query returns. "
+                    + "Sorting/pagination use standard Spring Pageable query params (page, size, sort). "
+                    + "Returns the lightweight summary DTO, not the full complaint payload.")
+    public ResponseEntity<ApiResponse<PageResponse<ComplaintSummaryResponse>>> getAllComplaints(
+            @Parameter(description = "Exact match on complaint status") @RequestParam(required = false) ComplaintStatus status,
+            @Parameter(description = "Exact match on complaint priority") @RequestParam(required = false) ComplaintPriority priority,
+            @Parameter(description = "Exact match on complaint category") @RequestParam(required = false) ComplaintCategory category,
+            @Parameter(description = "Inclusive lower bound on createdAt (ISO date, e.g. 2026-01-01)")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @Parameter(description = "Inclusive upper bound on createdAt (ISO date)")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
-            @PageableDefault(size = 20) Pageable pageable) {
+            @Parameter(description = "Case-insensitive partial match on the resident's full name")
+            @RequestParam(required = false) String residentName,
+            @Parameter(description = "Filter by the persisted overdue flag (true/false)")
+            @RequestParam(required = false) Boolean overdue,
+            @Parameter(description = "Case-insensitive partial match across title and description")
+            @RequestParam(required = false) String keyword,
+            @ParameterObject @PageableDefault(size = 20) Pageable pageable) {
 
-        PageResponse<ComplaintResponse> response = complaintService.getAllComplaints(
-                status, priority, category, fromDate, toDate, pageable);
+        PageResponse<ComplaintSummaryResponse> response = complaintService.getAllComplaints(
+                status, priority, category, fromDate, toDate, residentName, overdue, keyword, pageable);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get a single complaint (full detail)", description = "Owner or ADMIN only. Returns the full ComplaintResponse including description and imageUrl.")
     public ResponseEntity<ApiResponse<ComplaintResponse>> getComplaintById(
             @PathVariable Long id, @AuthenticationPrincipal UserPrincipal principal) {
 
@@ -91,6 +110,7 @@ public class ComplaintController {
     }
 
     @GetMapping("/{id}/history")
+    @Operation(summary = "Get a complaint's audit trail", description = "Owner or ADMIN only. Append-only history rows, oldest first.")
     public ResponseEntity<ApiResponse<List<ComplaintHistoryResponse>>> getComplaintHistory(
             @PathVariable Long id, @AuthenticationPrincipal UserPrincipal principal) {
 
@@ -100,6 +120,7 @@ public class ComplaintController {
 
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Update complaint status", description = "Enforced by ComplaintStateMachine. Resolving a complaint also clears its overdue flag, if set.")
     public ResponseEntity<ApiResponse<ComplaintResponse>> updateStatus(
             @PathVariable Long id,
             @Valid @RequestBody ComplaintStatusUpdateRequest request,
@@ -111,6 +132,7 @@ public class ComplaintController {
 
     @PatchMapping("/{id}/priority")
     @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Update complaint priority")
     public ResponseEntity<ApiResponse<ComplaintResponse>> updatePriority(
             @PathVariable Long id, @Valid @RequestBody ComplaintPriorityUpdateRequest request) {
 

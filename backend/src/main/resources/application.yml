@@ -45,6 +45,9 @@ resolvo:
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   complaint:
     overdue-threshold-days: ${OVERDUE_THRESHOLD_DAYS:5}
+    # How often OverdueComplaintScheduler scans for newly-overdue complaints.
+    # Default: every hour. Configurable, not hardcoded in the scheduler itself.
+    overdue-scan-interval-ms: ${OVERDUE_SCAN_INTERVAL_MS:3600000}
   cloudinary:
     cloud-name: ${CLOUDINARY_CLOUD_NAME:}
     api-key: ${CLOUDINARY_API_KEY:}

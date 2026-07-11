@@ -10,6 +10,7 @@ import com.resolvo.backend.complaint.dto.ComplaintHistoryResponse;
 import com.resolvo.backend.complaint.dto.ComplaintPriorityUpdateRequest;
 import com.resolvo.backend.complaint.dto.ComplaintResponse;
 import com.resolvo.backend.complaint.dto.ComplaintStatusUpdateRequest;
+import com.resolvo.backend.complaint.dto.ComplaintSummaryResponse;
 import com.resolvo.backend.complaint.event.ComplaintCreatedEvent;
 import com.resolvo.backend.complaint.event.ComplaintStatusChangedEvent;
 import com.resolvo.backend.exception.ResourceNotFoundException;
@@ -49,6 +50,7 @@ public class ComplaintService {
                 .imageUrl(imageUrl)
                 .resident(resident)
                 .closed(false)
+                .overdue(false)
                 .build();
 
         Complaint saved = complaintRepository.save(complaint);
@@ -58,19 +60,27 @@ public class ComplaintService {
         return mapper.toResponse(saved);
     }
 
+    /** Residents only ever see their own complaints - unchanged access rule, now returning the lightweight DTO. */
     @Transactional(readOnly = true)
-    public PageResponse<ComplaintResponse> getMyComplaints(Long residentId, Pageable pageable) {
+    public PageResponse<ComplaintSummaryResponse> getMyComplaints(Long residentId, Pageable pageable) {
         Page<Complaint> page = complaintRepository.findByResidentId(residentId, pageable);
-        return new PageResponse<>(page.map(mapper::toResponse));
+        return new PageResponse<>(page.map(mapper::toSummaryResponse));
     }
 
+    /**
+     * Advanced admin search: every filter is pushed into the query via
+     * ComplaintSpecifications (Criteria API) - nothing is filtered in Java
+     * after the rows come back. Sorting/pagination ride on the same Pageable.
+     */
     @Transactional(readOnly = true)
-    public PageResponse<ComplaintResponse> getAllComplaints(ComplaintStatus status, ComplaintPriority priority,
-                                                             ComplaintCategory category, LocalDate fromDate,
-                                                             LocalDate toDate, Pageable pageable) {
-        var spec = ComplaintSpecifications.withFilters(status, priority, category, fromDate, toDate);
+    public PageResponse<ComplaintSummaryResponse> getAllComplaints(ComplaintStatus status, ComplaintPriority priority,
+                                                                    ComplaintCategory category, LocalDate fromDate,
+                                                                    LocalDate toDate, String residentName,
+                                                                    Boolean overdue, String keyword, Pageable pageable) {
+        var spec = ComplaintSpecifications.withFilters(
+                status, priority, category, fromDate, toDate, residentName, overdue, keyword);
         Page<Complaint> page = complaintRepository.findAll(spec, pageable);
-        return new PageResponse<>(page.map(mapper::toResponse));
+        return new PageResponse<>(page.map(mapper::toSummaryResponse));
     }
 
     @Transactional(readOnly = true)
@@ -99,6 +109,10 @@ public class ComplaintService {
         complaint.setStatus(request.getNewStatus());
         if (request.getNewStatus() == ComplaintStatus.RESOLVED) {
             complaint.setClosed(true);
+            // No longer an active overdue item once resolved - OverdueDetectionService
+            // only ever sets this flag true; clearing it on resolution is this
+            // service's own responsibility, not the scheduler's.
+            complaint.setOverdue(false);
         }
         Complaint saved = complaintRepository.save(complaint);
 

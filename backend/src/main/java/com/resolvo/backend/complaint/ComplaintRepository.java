@@ -62,4 +62,18 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Long>, org
             countQuery = "SELECT COUNT(DISTINCT to_char(date_trunc('month', created_at), 'YYYY-MM')) FROM complaints",
             nativeQuery = true)
     Page<MonthlyStatsProjection> findMonthlyStats(Pageable pageable);
+
+    // ---- Overdue Detection additions below ----
+
+    /**
+     * Candidates for the scheduled overdue scan: still open, not yet flagged,
+     * older than the configured threshold. OverdueDetectionService loads
+     * these as entities (rather than a bulk UPDATE) specifically so it can
+     * publish one ComplaintOverdueEvent per complaint that just crossed the
+     * line - a documented trade-off of per-row events over raw UPDATE throughput.
+     */
+    List<Complaint> findByClosedFalseAndOverdueFalseAndCreatedAtBefore(Instant threshold);
+
+    /** Dashboard-facing count: reads the persisted flag directly, no threshold recomputation. */
+    long countByOverdueTrueAndClosedFalse();
 }

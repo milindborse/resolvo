@@ -12,14 +12,11 @@ import com.resolvo.backend.dashboard.dto.PriorityCountResponse;
 import com.resolvo.backend.dashboard.dto.RecentComplaintResponse;
 import com.resolvo.backend.dashboard.dto.StatusCountResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,10 +28,7 @@ public class DashboardService {
     private final ComplaintRepository complaintRepository;
     private final DashboardMapper mapper;
 
-    @Value("${resolvo.complaint.overdue-threshold-days}")
-    private int overdueThresholdDays;
-
-    // ---- Existing method, untouched - kept for backward compatibility ----
+    // ---- Existing method, untouched in shape - now reads the persisted overdue flag ----
     public DashboardResponse getDashboard() {
         Map<String, Long> byStatus = new LinkedHashMap<>();
         for (ComplaintStatus status : ComplaintStatus.values()) {
@@ -46,8 +40,9 @@ public class DashboardService {
             byCategory.put(category.name(), complaintRepository.countByCategory(category));
         }
 
-        Instant threshold = Instant.now().minus(overdueThresholdDays, ChronoUnit.DAYS);
-        long overdueCount = complaintRepository.countOverdue(threshold);
+        // Now backed by OverdueDetectionService's persisted flag, not a recomputed threshold -
+        // this immediately reflects whatever the scheduler has flagged, no drift possible.
+        long overdueCount = complaintRepository.countByOverdueTrueAndClosedFalse();
 
         return DashboardResponse.builder()
                 .countsByStatus(byStatus)
@@ -60,14 +55,12 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public DashboardSummaryResponse getSummary() {
-        Instant threshold = Instant.now().minus(overdueThresholdDays, ChronoUnit.DAYS);
-
         return DashboardSummaryResponse.builder()
                 .totalComplaints(complaintRepository.count())
                 .openComplaints(complaintRepository.countByStatus(ComplaintStatus.OPEN))
                 .resolvedComplaints(complaintRepository.countByStatus(ComplaintStatus.RESOLVED))
                 .highPriorityComplaints(complaintRepository.countByPriority(ComplaintPriority.HIGH))
-                .overdueComplaints(complaintRepository.countOverdue(threshold))
+                .overdueComplaints(complaintRepository.countByOverdueTrueAndClosedFalse())
                 .build();
     }
 
