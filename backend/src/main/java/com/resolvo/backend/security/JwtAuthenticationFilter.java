@@ -1,10 +1,12 @@
 package com.resolvo.backend.security;
 
+import com.resolvo.backend.common.constants.ApiPaths;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -25,10 +28,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService userDetailsService;
 
     private static final List<AntPathRequestMatcher> PUBLIC_MATCHERS = List.of(
-            new AntPathRequestMatcher("/api/v1/auth/**"),
+            new AntPathRequestMatcher(ApiPaths.Auth.BASE + "/**"),
             new AntPathRequestMatcher("/swagger-ui/**"),
             new AntPathRequestMatcher("/swagger-ui.html"),
-            new AntPathRequestMatcher("/v3/api-docs/**")
+            new AntPathRequestMatcher("/v3/api-docs/**"),
+            new AntPathRequestMatcher("/actuator/health/**"),
+            new AntPathRequestMatcher("/actuator/info")
     );
 
     @Override
@@ -65,6 +70,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (Exception ex) {
             // Invalid/expired token: leave context unauthenticated, entry point handles the 401.
+            // Logged at debug, not warn/error - an expired token on a public-facing API is routine,
+            // not an operational concern worth alerting on.
+            log.debug("JWT validation failed, proceeding unauthenticated: {}", ex.getMessage());
         }
 
         filterChain.doFilter(request, response);

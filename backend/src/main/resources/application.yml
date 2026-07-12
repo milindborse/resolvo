@@ -10,6 +10,13 @@ spring:
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      # Conservative defaults for a single small Postgres instance (Render/Neon/Supabase
+      # free tiers cap connections low) - tune upward only if the DB plan supports it.
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:10}
+      minimum-idle: ${DB_POOL_MIN_IDLE:2}
+      connection-timeout: 30000
+      idle-timeout: 600000
 
   jpa:
     hibernate:
@@ -20,6 +27,11 @@ spring:
         format_sql: true
         jdbc:
           time_zone: UTC
+          # Batches lazy-load calls Hibernate couldn't avoid into fewer round trips -
+          # a defense-in-depth complement to the @EntityGraph fetch-joins already in
+          # ComplaintRepository, not a replacement for them.
+          batch_size: 20
+        default_batch_fetch_size: 20
     open-in-view: false
 
   mail:
@@ -62,7 +74,20 @@ springdoc:
   api-docs:
     path: /v3/api-docs
 
+management:
+  endpoints:
+    web:
+      exposure:
+        # Deliberately minimal - only health/info are exposed, never the full
+        # actuator surface (env, beans, etc. can leak configuration/secrets).
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
 logging:
   level:
     com.resolvo.backend: INFO
     org.springframework.security: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"

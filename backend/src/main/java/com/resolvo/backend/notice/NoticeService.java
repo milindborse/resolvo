@@ -8,6 +8,7 @@ import com.resolvo.backend.notice.dto.NoticeCreateRequest;
 import com.resolvo.backend.notice.dto.NoticeResponse;
 import com.resolvo.backend.notice.dto.NoticeUpdateRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ import java.time.Instant;
  * NoticePublishedEvent and lets NoticeEmailListener react independently,
  * the same event-driven separation used by the complaint module.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NoticeService {
@@ -42,6 +44,7 @@ public class NoticeService {
                 .build();
 
         Notice saved = noticeRepository.save(notice);
+        log.info("Notice draft created: id={}, important={}", saved.getId(), saved.isImportant());
         return mapper.toResponse(saved);
     }
 
@@ -62,6 +65,7 @@ public class NoticeService {
             notice.setPinned(request.getPinned());
         }
 
+        log.info("Notice id={} updated", id);
         return mapper.toResponse(noticeRepository.save(notice));
     }
 
@@ -70,6 +74,7 @@ public class NoticeService {
         Notice notice = findActiveOrThrow(id);
         notice.setDeleted(true);
         noticeRepository.save(notice);
+        log.info("Notice id={} soft-deleted", id);
     }
 
     @Transactional
@@ -83,6 +88,7 @@ public class NoticeService {
         notice.setPublished(true);
         notice.setPublishedAt(Instant.now());
         Notice saved = noticeRepository.save(notice);
+        log.info("Notice id={} published (important={})", saved.getId(), saved.isImportant());
 
         if (saved.isImportant()) {
             eventPublisher.publishEvent(new NoticePublishedEvent(this, saved.getId()));
@@ -101,21 +107,25 @@ public class NoticeService {
         }
 
         notice.setPinned(pinned);
+        log.info("Notice id={} pinned={}", id, pinned);
         return mapper.toResponse(noticeRepository.save(notice));
     }
 
     /** Resident + admin board view: published only, pinned first. */
+    @Transactional(readOnly = true)
     public PageResponse<NoticeResponse> getPublishedNotices(Pageable pageable) {
         Page<Notice> page = noticeRepository.findByDeletedFalseAndPublishedTrueOrderByPinnedDescCreatedAtDesc(pageable);
         return new PageResponse<>(page.map(mapper::toResponse));
     }
 
     /** Admin-only view: drafts + published, still pinned first. */
+    @Transactional(readOnly = true)
     public PageResponse<NoticeResponse> getAllNoticesForAdmin(Pageable pageable) {
         Page<Notice> page = noticeRepository.findByDeletedFalseOrderByPinnedDescCreatedAtDesc(pageable);
         return new PageResponse<>(page.map(mapper::toResponse));
     }
 
+    @Transactional(readOnly = true)
     public NoticeResponse getNoticeById(Long id, boolean isAdmin) {
         Notice notice = findActiveOrThrow(id);
 

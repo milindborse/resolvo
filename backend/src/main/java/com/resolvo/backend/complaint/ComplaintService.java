@@ -5,6 +5,7 @@ import com.resolvo.backend.common.dto.PageResponse;
 import com.resolvo.backend.common.enums.ComplaintCategory;
 import com.resolvo.backend.common.enums.ComplaintPriority;
 import com.resolvo.backend.common.enums.ComplaintStatus;
+import com.resolvo.backend.common.enums.UserRole;
 import com.resolvo.backend.complaint.dto.ComplaintCreateRequest;
 import com.resolvo.backend.complaint.dto.ComplaintHistoryResponse;
 import com.resolvo.backend.complaint.dto.ComplaintPriorityUpdateRequest;
@@ -16,6 +17,7 @@ import com.resolvo.backend.complaint.event.ComplaintStatusChangedEvent;
 import com.resolvo.backend.exception.ResourceNotFoundException;
 import com.resolvo.backend.exception.UnauthorizedAccessException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ComplaintService {
@@ -54,6 +57,7 @@ public class ComplaintService {
                 .build();
 
         Complaint saved = complaintRepository.save(complaint);
+        log.info("Complaint created: id={}, category={}, residentId={}", saved.getId(), saved.getCategory(), resident.getId());
 
         eventPublisher.publishEvent(new ComplaintCreatedEvent(this, saved.getId(), resident));
 
@@ -115,6 +119,7 @@ public class ComplaintService {
             complaint.setOverdue(false);
         }
         Complaint saved = complaintRepository.save(complaint);
+        log.info("Complaint id={} status transitioned {} -> {}", complaintId, previous, request.getNewStatus());
 
         eventPublisher.publishEvent(new ComplaintStatusChangedEvent(
                 this, saved.getId(), previous, request.getNewStatus(), actor, request.getRemarks()));
@@ -125,6 +130,7 @@ public class ComplaintService {
     @Transactional
     public ComplaintResponse updatePriority(Long complaintId, ComplaintPriorityUpdateRequest request) {
         Complaint complaint = findOrThrow(complaintId);
+        log.info("Complaint id={} priority {} -> {}", complaintId, complaint.getPriority(), request.getPriority());
         complaint.setPriority(request.getPriority());
         return mapper.toResponse(complaintRepository.save(complaint));
     }
@@ -135,7 +141,7 @@ public class ComplaintService {
     }
 
     private void assertViewable(Complaint complaint, User requester) {
-        boolean isAdmin = requester.getRole().name().equals("ADMIN");
+        boolean isAdmin = requester.getRole() == UserRole.ADMIN;
         boolean isOwner = complaint.getResident().getId().equals(requester.getId());
         if (!isAdmin && !isOwner) {
             throw new UnauthorizedAccessException("You cannot view another resident's complaint");

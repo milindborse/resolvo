@@ -9,6 +9,7 @@ import com.resolvo.backend.complaint.projection.PriorityCountProjection;
 import com.resolvo.backend.complaint.projection.StatusCountProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +19,14 @@ import java.util.List;
 
 public interface ComplaintRepository extends JpaRepository<Complaint, Long>, org.springframework.data.jpa.repository.JpaSpecificationExecutor<Complaint> {
 
+    /**
+     * @EntityGraph fetches `resident` in the same query instead of one lazy
+     * load per row - without this, listing N complaints costs N+1 queries
+     * (1 for the page, N for each row's resident) purely from ComplaintMapper
+     * touching resident.getFullName()/getFlatNumber(). Applied to every
+     * list-returning method below for the same reason.
+     */
+    @EntityGraph(attributePaths = "resident")
     Page<Complaint> findByResidentId(Long residentId, Pageable pageable);
 
     @Query("select count(c) from Complaint c where c.status = :status")
@@ -33,8 +42,10 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Long>, org
 
     long countByPriority(ComplaintPriority priority);
 
+    @EntityGraph(attributePaths = "resident")
     Page<Complaint> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
+    @EntityGraph(attributePaths = "resident")
     Page<Complaint> findByStatusOrderByUpdatedAtDesc(ComplaintStatus status, Pageable pageable);
 
     @Query("select c.category as category, count(c) as count from Complaint c group by c.category")
@@ -71,6 +82,7 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Long>, org
      * these as entities (rather than a bulk UPDATE) specifically so it can
      * publish one ComplaintOverdueEvent per complaint that just crossed the
      * line - a documented trade-off of per-row events over raw UPDATE throughput.
+     * No resident fetch needed here - the scheduler never touches resident.
      */
     List<Complaint> findByClosedFalseAndOverdueFalseAndCreatedAtBefore(Instant threshold);
 
