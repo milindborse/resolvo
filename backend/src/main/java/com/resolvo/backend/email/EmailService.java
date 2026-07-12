@@ -30,6 +30,7 @@ public class EmailService {
             helper.setSubject(subject);
             helper.setText(htmlBody, true);
             mailSender.send(message);
+            log.debug("Email sent to {} - subject: {}", to, subject);
         } catch (MessagingException | RuntimeException ex) {
             // Email delivery failures must never break the request that triggered them -
             // this runs async and only logs. Retries/dead-letter queue are a Phase 2 concern.
