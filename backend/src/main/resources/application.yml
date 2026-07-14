@@ -1,4 +1,7 @@
 # backend/src/main/resources/application.yml
+server:
+  port: ${PORT:8080}
+
 spring:
   config:
     import: "optional:file:.env[.properties]"
