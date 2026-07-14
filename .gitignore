@@ -139,7 +139,7 @@ application-db.properties
 # AWS/Cloud credentials
 .aws/
 credentials
-config
+.aws/config
 
 # Kubernetes
 *.kubeconfig
@@ -253,6 +253,7 @@ temp/
 uploads/
 downloads/
 *.sql
+!backend/src/main/resources/db/migration/*.sql
 data/
 logs/
 backup/
