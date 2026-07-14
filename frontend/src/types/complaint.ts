@@ -6,6 +6,7 @@ export interface ComplaintSummary {
   category: ComplaintCategory
   status: ComplaintStatus
   priority: ComplaintPriority
+  suggestedPriority?: ComplaintPriority | null
   overdue: boolean
   closed: boolean
   residentName: string
@@ -21,6 +22,7 @@ export interface ComplaintDetail {
   category: ComplaintCategory
   status: ComplaintStatus
   priority: ComplaintPriority
+  suggestedPriority?: ComplaintPriority | null
   imageUrl: string | null
   closed: boolean
   overdue: boolean

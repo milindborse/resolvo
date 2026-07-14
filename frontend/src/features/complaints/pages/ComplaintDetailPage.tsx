@@ -65,7 +65,12 @@ export function ComplaintDetailPage() {
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <PriorityBadge priority={complaint.priority} />
+                  {isAdmin && <PriorityBadge priority={complaint.priority} />}
+                  {isAdmin && complaint.suggestedPriority && (
+                    <span className="inline-flex items-center gap-1 rounded-md border border-dashed border-primary/40 px-2 py-0.5 text-xs text-primary">
+                      AI Suggested: {complaint.suggestedPriority}
+                    </span>
+                  )}
                   <StatusBadge status={complaint.status} />
                 </div>
               </div>
@@ -128,6 +133,7 @@ export function ComplaintDetailPage() {
           <UpdatePriorityDialog
             complaintId={complaint.id}
             currentPriority={complaint.priority}
+            suggestedPriority={complaint.suggestedPriority}
             open={priorityDialogOpen}
             onOpenChange={setPriorityDialogOpen}
           />

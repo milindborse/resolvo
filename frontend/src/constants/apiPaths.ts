@@ -39,3 +39,11 @@ export const DASHBOARD_PATHS = {
   recentCreated: '/recent-created',
   recentResolved: '/recent-resolved',
 }
+
+export const NOTIFICATION_PATHS = {
+  base: `${API_BASE}/notifications`,
+  unreadCount: '/unread-count',
+  read: (id: number | string) => `/${id}/read`,
+  readAll: '/read-all',
+}
+

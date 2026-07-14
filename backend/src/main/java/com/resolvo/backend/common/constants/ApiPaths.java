@@ -59,4 +59,14 @@ public final class ApiPaths {
         public static final String RECENT_CREATED = "/recent-created";
         public static final String RECENT_RESOLVED = "/recent-resolved";
     }
+
+    public static final class Notifications {
+        private Notifications() {
+        }
+
+        public static final String BASE = API_BASE + "/notifications";
+        public static final String UNREAD_COUNT = "/unread-count";
+        public static final String READ = "/{id}/read";
+        public static final String READ_ALL = "/read-all";
+    }
 }

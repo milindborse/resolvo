@@ -39,17 +39,21 @@ public class ComplaintService {
     private final ComplaintStateMachine stateMachine;
     private final CloudinaryUploadService cloudinaryUploadService;
     private final ApplicationEventPublisher eventPublisher;
+    private final com.resolvo.backend.complaint.ai.GroqPriorityService groqPriorityService;
 
     @Transactional
     public ComplaintResponse createComplaint(ComplaintCreateRequest request, MultipartFile image, User resident) {
         String imageUrl = (image == null || image.isEmpty()) ? null : cloudinaryUploadService.upload(image);
+
+        ComplaintPriority suggested = groqPriorityService.suggestPriority(request.getDescription(), request.getCategory());
 
         Complaint complaint = Complaint.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .category(request.getCategory())
                 .status(ComplaintStatus.OPEN)
-                .priority(ComplaintPriority.LOW)
+                .priority(suggested)
+                .suggestedPriority(suggested)
                 .imageUrl(imageUrl)
                 .resident(resident)
                 .closed(false)

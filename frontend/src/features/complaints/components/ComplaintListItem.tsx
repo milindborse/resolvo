@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { MapPin } from 'lucide-react'
 import { StatusBadge } from '@/components/shared/StatusBadge'
-import { PriorityBadge } from '@/components/shared/PriorityBadge'
 import { OverdueBadge } from '@/components/shared/OverdueBadge'
 import { timeAgo, titleCase } from '@/utils/formatters'
 import type { ComplaintSummary } from '@/types/complaint'
@@ -22,7 +21,6 @@ export function ComplaintListItem({ complaint }: { complaint: ComplaintSummary }
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-2">
-        <PriorityBadge priority={complaint.priority} />
         <StatusBadge status={complaint.status} />
       </div>
     </Link>

@@ -19,11 +19,12 @@ import { titleCase } from '@/utils/formatters'
 interface UpdatePriorityDialogProps {
   complaintId: number
   currentPriority: ComplaintPriority
+  suggestedPriority?: ComplaintPriority | null
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function UpdatePriorityDialog({ complaintId, currentPriority, open, onOpenChange }: UpdatePriorityDialogProps) {
+export function UpdatePriorityDialog({ complaintId, currentPriority, suggestedPriority, open, onOpenChange }: UpdatePriorityDialogProps) {
   const updatePriority = useUpdateComplaintPriority()
 
   const { control, handleSubmit } = useForm<PriorityUpdateFormValues>({
@@ -42,7 +43,14 @@ export function UpdatePriorityDialog({ complaintId, currentPriority, open, onOpe
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <DialogHeader>
             <DialogTitle>Update Priority</DialogTitle>
-            <DialogDescription>Set how urgently this complaint should be handled.</DialogDescription>
+            <DialogDescription>
+              Set how urgently this complaint should be handled.
+              {suggestedPriority && (
+                <span className="block mt-1 text-primary">
+                  AI Suggested Priority: <strong>{titleCase(suggestedPriority)}</strong>
+                </span>
+              )}
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-1.5">

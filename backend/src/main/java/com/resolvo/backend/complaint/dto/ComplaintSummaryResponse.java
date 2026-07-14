@@ -23,6 +23,7 @@ public class ComplaintSummaryResponse {
     private ComplaintCategory category;
     private ComplaintStatus status;
     private ComplaintPriority priority;
+    private ComplaintPriority suggestedPriority;
     private boolean overdue;
     private boolean closed;
     private String residentName;

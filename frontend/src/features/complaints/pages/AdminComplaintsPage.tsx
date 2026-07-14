@@ -48,7 +48,7 @@ export function AdminComplaintsPage() {
             </TableHeader>
             <TableBody>
               {data.content.map((c) => (
-                <TableRow key={c.id} className="cursor-pointer" onClick={() => navigate(`/complaints/${c.id}`)}>
+                <TableRow key={c.id} className={`cursor-pointer ${c.overdue ? 'bg-destructive/5 border-l-2 border-l-destructive' : ''}`} onClick={() => navigate(`/complaints/${c.id}`)}>
                   <TableCell className="max-w-[220px] truncate font-medium">
                     <div className="flex items-center gap-2">
                       {c.title}

@@ -88,4 +88,7 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Long>, org
 
     /** Dashboard-facing count: reads the persisted flag directly, no threshold recomputation. */
     long countByOverdueTrueAndClosedFalse();
+
+    /** All unclosed, non-overdue complaints - used by dynamic per-priority overdue detection. */
+    List<Complaint> findByClosedFalseAndOverdueFalse();
 }

@@ -10,9 +10,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * Second listener on the same event as ComplaintHistoryListener - proof that
- * ComplaintService is fully decoupled from both history and notification
- * concerns. Runs after history (Order 2) purely for log ordering; failure
+ * Runs after history (Order 2) purely for log ordering; failure
  * here can never roll back the status change or the history row since
  * EmailService itself swallows and logs delivery errors.
  */
@@ -22,6 +20,7 @@ public class ComplaintEmailListener {
 
     private final ComplaintRepository complaintRepository;
     private final EmailService emailService;
+    private final com.resolvo.backend.notification.NotificationService notificationService;
 
     @Order(2)
     @EventListener
@@ -40,5 +39,17 @@ public class ComplaintEmailListener {
                 complaint.getResident().getEmail(),
                 "Your complaint status has changed - Resolvo",
                 html);
+
+        // Also send in-app notification
+        String notificationTitle = "Complaint Status Updated";
+        String notificationMessage = String.format("Your complaint \"%s\" status is now %s.",
+                complaint.getTitle(), event.getNewStatus());
+        notificationService.createNotification(
+                complaint.getResident().getId(),
+                notificationTitle,
+                notificationMessage,
+                com.resolvo.backend.notification.NotificationType.COMPLAINT_STATUS_CHANGED,
+                complaint.getId()
+        );
     }
 }

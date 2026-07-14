@@ -68,6 +68,14 @@ public class Complaint extends BaseEntity {
     private User resident;
 
     /**
+     * AI-suggested priority from Groq. Stored separately from `priority` so
+     * admin can always override while the original suggestion stays visible.
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private ComplaintPriority suggestedPriority;
+
+    /**
      * True once status has ever reached RESOLVED. Enforces "closed after resolved" per spec.
      */
     @Builder.Default

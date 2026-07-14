@@ -1,7 +1,8 @@
 import { useLocation } from 'react-router-dom'
-import { Bell, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import { ThemeToggle } from '@/components/shared/ThemeToggle'
 import { UserMenu } from '@/components/layout/UserMenu'
+import { NotificationPanel } from '@/components/layout/NotificationPanel'
 import { NAV_ITEMS } from '@/constants/navigation'
 
 function useBreadcrumb() {
@@ -21,13 +22,7 @@ export function Topbar() {
         <span className="font-medium text-foreground">{crumb}</span>
       </div>
       <div className="flex items-center gap-1">
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="relative flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-        >
-          <Bell className="h-4 w-4" />
-        </button>
+        <NotificationPanel />
         <ThemeToggle />
         <UserMenu />
       </div>

@@ -90,9 +90,7 @@ public class NoticeService {
         Notice saved = noticeRepository.save(notice);
         log.info("Notice id={} published (important={})", saved.getId(), saved.isImportant());
 
-        if (saved.isImportant()) {
-            eventPublisher.publishEvent(new NoticePublishedEvent(this, saved.getId()));
-        }
+        eventPublisher.publishEvent(new NoticePublishedEvent(this, saved.getId()));
 
         return mapper.toResponse(saved);
     }
@@ -114,7 +112,7 @@ public class NoticeService {
     /** Resident + admin board view: published only, pinned first. */
     @Transactional(readOnly = true)
     public PageResponse<NoticeResponse> getPublishedNotices(Pageable pageable) {
-        Page<Notice> page = noticeRepository.findByDeletedFalseAndPublishedTrueOrderByPinnedDescCreatedAtDesc(pageable);
+        Page<Notice> page = noticeRepository.findByDeletedFalseAndPublishedTrueOrderByPinnedDescPublishedAtDesc(pageable);
         return new PageResponse<>(page.map(mapper::toResponse));
     }
 

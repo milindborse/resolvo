@@ -19,6 +19,7 @@ public class ComplaintResponse {
     private ComplaintCategory category;
     private ComplaintStatus status;
     private ComplaintPriority priority;
+    private ComplaintPriority suggestedPriority;
     private String imageUrl;
     private boolean closed;
     private boolean overdue;
