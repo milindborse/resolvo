@@ -20,7 +20,7 @@ public class EmailService {
     @Value("${resolvo.mail.from}")
     private String fromAddress;
 
-    @Async
+    @Async("mailTaskExecutor")
     public void sendHtml(String to, String subject, String htmlBody) {
         try {
             MimeMessage message = mailSender.createMimeMessage();

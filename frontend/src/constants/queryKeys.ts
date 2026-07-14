@@ -1,0 +1,15 @@
+export const QUERY_KEYS = {
+  myComplaints: (page: number) => ['complaints', 'my', page] as const,
+  adminComplaints: (filters: unknown) => ['complaints', 'admin', filters] as const,
+  complaintDetail: (id: number) => ['complaints', 'detail', id] as const,
+  complaintHistory: (id: number) => ['complaints', 'history', id] as const,
+  notices: (page: number) => ['notices', 'board', page] as const,
+  adminNotices: (page: number) => ['notices', 'admin', page] as const,
+  dashboardSummary: ['dashboard', 'summary'] as const,
+  dashboardByCategory: ['dashboard', 'by-category'] as const,
+  dashboardByPriority: ['dashboard', 'by-priority'] as const,
+  dashboardByStatus: ['dashboard', 'by-status'] as const,
+  dashboardMonthly: ['dashboard', 'monthly'] as const,
+  dashboardRecentCreated: ['dashboard', 'recent-created'] as const,
+  dashboardRecentResolved: ['dashboard', 'recent-resolved'] as const,
+}
