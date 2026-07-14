@@ -48,6 +48,8 @@ resolvo:
   groq:
     api-key: ${GROQ_API_KEY}
     model: ${GROQ_MODEL:llama-3.1-8b-instant}
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:https://resolvo-eight.vercel.app,http://localhost:5173}
 
 springdoc:
   swagger-ui:
