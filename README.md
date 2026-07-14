@@ -8,12 +8,12 @@ This repository is structured as a monorepo containing:
 1. **Backend**: Spring Boot 3.3 & Java 21 REST API. Detail notes: [`backend/README.md`](./backend/README.md).
 2. **Frontend**: React 19, TypeScript, Vite, Tailwind CSS v4 client. Detail notes: [`frontend/README.md`](./frontend/README.md).
 
----
 
 ## Table of Contents
 - [Features](#features)
 - [Tech Stack & Integrations](#tech-stack--integrations)
 - [System Architecture & Implementation](#system-architecture--implementation)
+  - [System Architecture Diagram](#system-architecture-diagram)
   - [Basic: Data Flow & Architecture](#basic-data-flow--architecture)
   - [Intermediate: Folder Structure & Package Layout](#intermediate-folder-structure--package-layout)
   - [Advanced Deep Dives](#advanced-deep-dives)
@@ -74,6 +74,114 @@ This repository is structured as a monorepo containing:
 ---
 
 ## System Architecture & Implementation
+
+### System Architecture Diagram
+
+Here is a high-level visual representation of how the React client, Spring Boot backend modules, events system, database, and external APIs interact together:
+
+```mermaid
+flowchart TB
+    %% Styling Classes
+    classDef client fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#fff;
+    classDef backend fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff;
+    classDef database fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#fff;
+    classDef external fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff;
+    classDef event fill:#ec4899,stroke:#be185d,stroke-width:2px,color:#fff;
+
+    %% Client Layer (Frontend)
+    subgraph Frontend ["Frontend Client (React 19 + Vite)"]
+        direction LR
+        UI["UI Pages / Components<br>(Tailwind v4 / Radix UI)"]
+        RQ["TanStack Query<br>(Client State / Caching)"]
+        AX["Axios Client<br>(JWT Interceptor)"]
+        UI --> RQ --> AX
+    end
+    class Frontend,UI,RQ,AX client;
+
+    %% Backend Layer (Spring Boot 3.3)
+    subgraph Backend ["Backend API (Spring Boot 3.3 / Java 21)"]
+        direction TB
+        SEC["Spring Security<br>(JWT Authentication Filter)"]
+        
+        %% Controllers
+        subgraph Controllers ["REST Controllers"]
+            AC["AuthController"]
+            CC["ComplaintController"]
+            NC["NoticeController"]
+            DC["DashboardController"]
+            NFC["NotificationController"]
+        end
+
+        %% Services
+        subgraph Services ["Service Layer"]
+            AS["AuthService"]
+            CS["ComplaintService"]
+            NS["NoticeService"]
+            DS["DashboardService"]
+            NF_S["NotificationService"]
+            
+            subgraph Lifecycle ["Lifecycle & Core Rules"]
+                SM["ComplaintStateMachine"]
+                SCH["OverdueComplaintScheduler"]
+            end
+        end
+
+        %% Decoupled Events
+        subgraph Events ["Spring Application Event Bus"]
+            direction LR
+            EV_PUB["ApplicationEventPublisher"]
+            EV_SUB["Event Listeners / Handlers"]
+            EV_PUB -->|Publishes Events| EV_SUB
+        end
+    end
+    class Backend,SEC,AC,CC,NC,DC,NFC,AS,CS,NS,DS,NF_S,SM,SCH,EV_PUB,EV_SUB backend;
+    class Events event;
+
+    %% Storage / Database Layer
+    subgraph Storage ["Storage Layer"]
+        PG[(PostgreSQL DB)]
+    end
+    class PG database;
+
+    %% External Services
+    subgraph Cloud ["Third-Party Integrations"]
+        CLD["Cloudinary API<br>(Image Upload Storage)"]
+        SG["SendGrid SMTP<br>(Email Notifications)"]
+        GQ["Groq AI API<br>(Llama 3 Priority Suggester)"]
+    end
+    class CLD,SG,GQ,Cloud external;
+
+    %% Flow Connections
+    AX ==>|1. Authenticated HTTPS Request| SEC
+    SEC --> Controllers
+
+    %% Controller -> Service mapping
+    AC --> AS
+    CC --> CS
+    NC --> NS
+    DC --> DS
+    NFC --> NF_S
+
+    %% Service business mappings
+    CS -.->|Validate Transitions| SM
+    CS -.->|Async Upload| CLD
+    CS -.->|Suggest Priority| GQ
+    SCH -.->|Runs checks & flags| CS
+
+    %% Event Bus integration
+    CS ==>|Status Change / Created| EV_PUB
+    NS ==>|Notice Published| EV_PUB
+    
+    %% Listeners actions
+    EV_SUB -.->|Write In-App Notification| NF_S
+    EV_SUB -.->|Audit Log Trail| PG
+    EV_SUB -.->|Send Email Alert| SG
+
+    %% DB reads/writes
+    Services ===>|JPA / Projections| PG
+    NF_S ===> PG
+    DS ===>|JPQL Aggregations / Native SQL| PG
+```
 
 ### Basic: Data Flow & Architecture
 At a basic level, Resolvo works by linking a responsive frontend interface to a RESTful API backend:
@@ -349,8 +457,6 @@ For security, self-registration via the frontend registration page **always** re
 
 ## Screenshots
 
-_Add screenshots here once the frontend is built - e.g. resident complaint form, admin dashboard, notice board._
-
 | Screen | Preview |
 |---|---|
 | Resident complaint form | _placeholder_ |
@@ -358,7 +464,6 @@ _Add screenshots here once the frontend is built - e.g. resident complaint form,
 | Notice board | _placeholder_ |
 | Complaint history timeline | _placeholder_ |
 
----
 
 ## Future Roadmap
 
