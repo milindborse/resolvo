@@ -2,6 +2,17 @@ server:
   port: ${PORT:8080}
 
 spring:
+  # Spring Boot has NO built-in .env support (unlike Node.js) - without this
+  # line, a backend/.env file is just an inert text file that nothing reads,
+  # and every ${VAR:default} placeholder below silently falls back to its
+  # default (often empty string). This tells Spring to parse .env as if it
+  # were a .properties file (simple KEY=VALUE lines, which .env already is).
+  # "optional:" means startup doesn't fail if the file is absent (e.g. in
+  # production, where real environment variables are set directly by the
+  # platform instead of a checked-in file).
+  config:
+    import: "optional:file:.env[.properties]"
+
   application:
     name: resolvo-backend
 
@@ -45,6 +56,12 @@ spring:
           auth: true
           starttls:
             enable: true
+          # Without explicit timeouts, a network-level SMTP hang (common on
+          # cloud platforms with restrictive outbound rules) blocks the
+          # mail thread indefinitely. These are generous but bounded.
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
 
   servlet:
     multipart:
