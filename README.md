@@ -17,6 +17,7 @@ An end-to-end maintenance complaint management platform enabling residents and a
 > *   **📘 Interactive API Documentation**: [![Swagger API Docs](https://img.shields.io/badge/Swagger-Click_to_Open-brightgreen?style=for-the-badge&logo=swagger)](https://resolvo-backend.onrender.com/swagger-ui/index.html)
 > *   **🎥 Product Video Demo**: [![Google Drive](https://img.shields.io/badge/Google_Drive-Click_to_Watch-red?style=for-the-badge&logo=googledrive)](https://drive.google.com/file/d/1bQ4ytBvznPtyj23EH4WpGqFL6iWbEuxP/view?usp=sharing)
 
+
 > [!TIP]
 > ### 🔑 Testing Credentials
 > #### **Admin Portal Access**
@@ -453,6 +454,15 @@ I configured Swagger UI on the backend to document the API endpoints dynamically
 | **Notifications**| `/api/v1/notifications`| Authenticated Users | Fetch notifications list, count unreads, mark read. |
 | **Dashboard** | `/api/v1/dashboard` | `ADMIN` | Fetch metrics and monthly trends. |
 
+## ScreenShots
+| Screen | Preview |
+|---|---|
+| Notices | <img width="1842" height="675" alt="image" src="https://github.com/user-attachments/assets/96cfdc1f-e5d2-4386-8806-2edcb947d081" />|
+| Dashboard |<img width="1841" height="632" alt="image" src="https://github.com/user-attachments/assets/eeb613c9-8fa3-4cbe-bf44-0dedea5f5c85" />|
+| Complaints | <img width="1866" height="548" alt="image" src="https://github.com/user-attachments/assets/039ec851-1b4e-4310-af32-0938580518ec" />|
+| Notifications,Auth and Health-Check-Controller | <img width="1847" height="807" alt="image" src="https://github.com/user-attachments/assets/28222634-1806-449b-974c-1200dea408fc" />|
+| Schemas |<img width="1816" height="828" alt="image" src="https://github.com/user-attachments/assets/f902fe3c-e5b9-4b87-9f28-39ef17503e66" />|
+
 ---
 
 ## Environment Configuration
@@ -541,12 +551,18 @@ For security, self-registration via the frontend registration page **always** re
 
 ## Screenshots
 
+
 | Screen | Preview |
 |---|---|
-| Resident complaint form | _placeholder_ |
-| Admin dashboard | _placeholder_ |
-| Notice board | _placeholder_ |
-| Complaint history timeline | _placeholder_ |
+| Resident complaint form | <img width="973" height="788" alt="image" src="https://github.com/user-attachments/assets/775516f5-ca9b-4bdc-8253-773a60f2f371" /> |
+| Resident DashBoard | <img width="1896" height="867" alt="image" src="https://github.com/user-attachments/assets/b39dc99c-7673-49c9-9239-0745e19cb968" /> |
+| Resident Complaint Status | <img width="1911" height="516" alt="image" src="https://github.com/user-attachments/assets/a0ab7529-c412-4282-8e76-7357bd1405b8" />|
+| Sent Mail to the Residents | <img width="1497" height="590" alt="image" src="https://github.com/user-attachments/assets/85893643-ad52-4ed7-b618-4fe1b8e33030" />|
+| Admin dashboard |<img width="1920" height="1218" alt="image" src="https://github.com/user-attachments/assets/ad51a796-9548-4499-824e-b0c126939796" /> |
+| Notice board |<img width="1627" height="537" alt="image" src="https://github.com/user-attachments/assets/e2198e73-ce75-4476-b49c-1e73d4a94c9e" />|
+| Admin Managing Complaints |<img width="1632" height="837" alt="image" src="https://github.com/user-attachments/assets/9e6cc566-5f23-49b7-9dda-16174850f163" />|
+| Admin Managing Notices |<img width="1678" height="701" alt="image" src="https://github.com/user-attachments/assets/d2cf9b5f-841c-4c7a-91c8-7d7bffdc455d" />|
+| Admin Creating Notice | <img width="770" height="521" alt="image" src="https://github.com/user-attachments/assets/5ddf83fa-66ff-41a3-95d5-b4a3707b072e" />|
 
 
 ## Future Roadmap
@@ -566,4 +582,4 @@ Now that I have successfully integrated the React frontend client with the Sprin
 |:---:|
 | 🎓 **Computer Engineering** |
 | 🏫 **VIIT Pune** |
-| [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?style=flat&logo=linkedin)](https://www.linkedin.com/) [![GitHub](https://img.shields.io/badge/GitHub-Profile-black?style=flat&logo=github)](https://github.com/) |
+| [![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue?style=flat&logo=linkedin)]([https://www.linkedin.com/](https://www.linkedin.com/in/milind-borse-025460292/)) [![GitHub](https://img.shields.io/badge/GitHub-Profile-black?style=flat&logo=github)]([https://github.com/](https://github.com/milindborse)) |
