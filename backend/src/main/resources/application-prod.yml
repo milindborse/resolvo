@@ -50,6 +50,9 @@ resolvo:
     model: ${GROQ_MODEL:llama-3.1-8b-instant}
   cors:
     allowed-origins: ${ALLOWED_ORIGINS:https://resolvo-eight.vercel.app,http://localhost:5173}
+  admin:
+    default-email: ${DEFAULT_ADMIN_EMAIL:admin@resolvo.app}
+    default-password: ${DEFAULT_ADMIN_PASSWORD}
 
 springdoc:
   swagger-ui:
