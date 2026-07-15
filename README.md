@@ -11,10 +11,11 @@
 An end-to-end maintenance complaint management platform enabling residents and administrators to manage issues with AI-assisted prioritization, automated workflows, notifications, analytics and production-grade architecture.
 
 > [!IMPORTANT]
-> ### 🚀 Live Production Links
-> *   **🌐 Deployed Application**: [![Vercel](https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel)](https://resolvo-eight.vercel.app/)
-> *   **⚙️ Deployed REST API**: [![Render](https://img.shields.io/badge/Render-API_Backend-violet?style=for-the-badge&logo=render)](https://resolvo-backend.onrender.com)
-> *   **📘 Interactive API Documentation**: [![Swagger API Docs](https://img.shields.io/badge/Swagger-API_Docs-brightgreen?style=for-the-badge&logo=swagger)](https://resolvo-backend.onrender.com/swagger-ui/index.html)
+> ### 🚀 Live Production & Demo Links (Click to Redirect)
+> *   **🌐 Deployed Application**: [![Vercel](https://img.shields.io/badge/Vercel-Click_to_Open-black?style=for-the-badge&logo=vercel)](https://resolvo-eight.vercel.app/)
+> *   **⚙️ Deployed REST API**: [![Render](https://img.shields.io/badge/Render-Click_to_Open-violet?style=for-the-badge&logo=render)](https://resolvo-backend.onrender.com)
+> *   **📘 Interactive API Documentation**: [![Swagger API Docs](https://img.shields.io/badge/Swagger-Click_to_Open-brightgreen?style=for-the-badge&logo=swagger)](https://resolvo-backend.onrender.com/swagger-ui/index.html)
+> *   **🎥 Product Video Demo**: [![Google Drive](https://img.shields.io/badge/Google_Drive-Click_to_Watch-red?style=for-the-badge&logo=googledrive)](https://drive.google.com/file/d/1bQ4ytBvznPtyj23EH4WpGqFL6iWbEuxP/view?usp=sharing)
 
 > [!TIP]
 > ### 🔑 Testing Credentials
